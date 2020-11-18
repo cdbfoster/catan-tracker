@@ -144,10 +144,15 @@ def clear_game(*_):
 
 
 def undo(*_):
-    entries = [line for line in open("game")][:-1]
+    entries = [line.strip() for line in open("game")]
+    if len(entries) > 0:
+        print(f"Undoing \"{entries[-1]}\".")
+    else:
+        print("Nothing to undo.")
+        return
 
     clear_game()
-    play_entries(entries, record=True)
+    play_entries(entries[:-1], record=True)
 
 
 def display_help(*_):
