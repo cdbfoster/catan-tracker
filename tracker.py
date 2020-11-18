@@ -167,6 +167,9 @@ Available Commands:
 
 
 def play_entries(entries, record=False):
+    global command_pattern
+    global commands
+    global dont_record_commands
     for entry in entries:
         match = command_pattern.search(entry.strip())
         if entry.strip() == "" or match is None:
@@ -175,7 +178,7 @@ def play_entries(entries, record=False):
         command, *parameters = match.groups()
         if command not in commands:
             continue
-        elif record and command != "u" and command != "h":
+        elif record and command not in dont_record_commands:
             with open("game", "a") as f:
                 f.write(entry.strip() + "\n")
 
@@ -280,6 +283,7 @@ commands = {
     "u": undo,
     "h": display_help,
 }
+dont_record_commands = ["u", "h"]
 
 drawers = [
     draw_player_blessedness,
