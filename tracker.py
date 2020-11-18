@@ -312,7 +312,7 @@ while True:
     entry = input("Command (h for help): ")
 
     match = command_pattern.search(entry.strip())
-    if match is None:
+    if entry.strip() == "" or match is None:
         continue
 
     command, *parameters = match.groups()
