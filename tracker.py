@@ -162,8 +162,13 @@ Available Commands:
   r <player> <number> - Prevent <player>'s <number> holding from receiving resources.
   u                   - Undo last successful command.
   c                   - Reset the game. (Can't be undone)
+  q                   - Quit. (Progress is saved)
   h                   - Display this help text.
 """)
+
+
+def quit(*_):
+    exit()
 
 
 def play_entries(entries, record=False):
@@ -282,8 +287,9 @@ commands = {
     "c": clear_game,
     "u": undo,
     "h": display_help,
+    "q": quit,
 }
-dont_record_commands = ["u", "h"]
+dont_record_commands = ["u", "h", "q"]
 
 drawers = [
     draw_player_blessedness,
