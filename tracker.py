@@ -22,7 +22,7 @@ probability = {
     12: 1 / 36,
 }
 
-roll_counts = {n: [0, 0] for n in probability.keys()}
+roll_counts = {n: 0 for n in probability.keys()}
 
 
 class Player:
@@ -66,9 +66,7 @@ def roll(number, *_):
     global roll_counts
 
     rolls.append(number)
-    roll_counts[number][0] += 1
-    for n in roll_counts.keys():
-        roll_counts[n][1] += probability[n]
+    roll_counts[number] += 1
 
     for p in players:
         for h in p.holdings:
@@ -142,7 +140,7 @@ def clear_game(*_):
     rolls = []
     players = []
 
-    roll_counts = {n: [0, 0] for n in probability.keys()}
+    roll_counts = {n: 0 for n in probability.keys()}
 
 
 def undo(*_):
@@ -229,21 +227,23 @@ def draw_roll_counts(figure, axes):
     a = axes["roll_counts"]
     a.clear()
     a.set_title("Roll Counts")
-    a.set_yticks(range(max([x[0] for x in roll_counts.values()]) + 1))
+    a.set_yticks(range(max(roll_counts.values()) + 1))
     a.grid(axis="y", which="major", linewidth=0.3)
-    a.bar(roll_counts.keys(), [x[0] for x in roll_counts.values()])
-    a.set_xticks([x for x in roll_counts.keys()])
+    a.bar(roll_counts.keys(), roll_counts.values())
+    a.set_xticks(list(roll_counts.keys()))
 
 
 def draw_number_blessedness(figure, axes):
+    global probability
+    global rolls
     global roll_counts
 
     a = axes["number_blessedness"]
     a.clear()
     a.set_title("Number Blessedness")
     a.axhline(1.0, color="black")
-    a.bar(roll_counts.keys(), [x[0] / x[1] if x[1] > 0 else 0.0 for x in roll_counts.values()])
-    a.set_xticks([x for x in roll_counts.keys()])
+    a.bar(roll_counts.keys(), [x / (p * len(rolls)) if len(rolls) > 0 else 0.0 for x, p in zip(roll_counts.values(), probability.values())])
+    a.set_xticks(list(roll_counts.keys()))
     a.grid(axis="y", which="major", linewidth=0.3)
 
 
