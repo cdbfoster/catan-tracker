@@ -3,7 +3,7 @@ from matplotlib.gridspec import GridSpec
 import os
 import re
 
-command_pattern = re.compile("^([a-z]?)\\s?(\\d{1,2}|[^\\s]+)?(?:\\s(\\d{1,2}))?$")
+command_pattern = re.compile("^([a-z]?)\\s?([^\\s]+)?(?:\\s([^\\s]+))?$")
 
 rolls = []
 players = []
@@ -96,6 +96,9 @@ def add_holding(name, number, *_):
     if name is None or number is None:
         return
 
+    if not number.isnumeric():
+        return
+
     number = int(number)
     if number < 2 or number > 12:
         return
@@ -108,7 +111,7 @@ def add_holding(name, number, *_):
     player.holdings.append(number)
 
 
-def move_robber(name, number, *_):
+def activate_robber(name, number, *_):
     global players
 
     if name is None and number is None:
@@ -118,15 +121,27 @@ def move_robber(name, number, *_):
     elif name is None or number is None:
         return
 
-    number = int(number)
-    if number < 2 or number > 12:
-        return
-
     player = {p.name: p for p in players}.get(name)
     if player is None:
         return
 
-    player.robbed_holdings.append(number)
+    if number.isnumeric():
+        number = int(number)
+        if number < 2 or number > 12:
+            return
+        player.robbed_holdings.append(number)
+    else:
+        recipient = {p.name: p for p in players}.get(number)
+        if recipient is None:
+            return
+
+        player.received -= 1
+        recipient.received += 1
+
+        player.blessedness[-1] = player.received / player.owed if player.owed > 0 else 0.0
+        recipient.blessedness[-1] = recipient.received / recipient.owed if recipient.owed > 0 else 0.0
+
+        player.robbed += 1
 
 
 def clear_game(*_):
@@ -161,8 +176,9 @@ Available Commands:
   <number>            - Record a roll.
   p <player>          - Adds <player> to the game.
   a <player> <number> - Give <player> a holding of <number>.
-  r                   - Clear the robber's holdings.
+  r                   - Clear the robber's current holdings.
   r <player> <number> - Prevent <player>'s <number> holding from receiving resources.
+  r <player> <player> - Steal a resource from the first player and give it to the second.
   u                   - Undo last successful command.
   c                   - Reset the game. (Can't be undone)
   q                   - Quit. (Progress is saved)
@@ -288,7 +304,7 @@ commands = {
     "": roll,
     "p": add_player,
     "a": add_holding,
-    "r": move_robber,
+    "r": activate_robber,
     "c": clear_game,
     "u": undo,
     "h": display_help,
