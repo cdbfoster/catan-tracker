@@ -149,11 +149,7 @@ def undo(*_):
     entries = [line for line in open("game")][:-1]
 
     clear_game()
-    play_entries(entries)
-
-    with open("game", "a") as f:
-        for entry in entries:
-            f.write(entry.strip() + "\n")
+    play_entries(entries, record=True)
 
 
 def display_help(*_):
@@ -170,15 +166,18 @@ Available Commands:
 """)
 
 
-def play_entries(entries):
+def play_entries(entries, record=False):
     for entry in entries:
         match = command_pattern.search(entry.strip())
-        if match is None:
+        if entry.strip() == "" or match is None:
             continue
 
         command, *parameters = match.groups()
         if command not in commands:
             continue
+        elif record and command != "u" and command != "h":
+            with open("game", "a") as f:
+                f.write(entry.strip() + "\n")
 
         commands[command](*parameters)
 
@@ -311,17 +310,6 @@ plt.show(block=False)
 while True:
     entry = input("Command (h for help): ")
 
-    match = command_pattern.search(entry.strip())
-    if entry.strip() == "" or match is None:
-        continue
-
-    command, *parameters = match.groups()
-    if command not in commands:
-        continue
-    elif command != "u" and command != "h":
-        with open("game", "a") as f:
-            f.write(entry.strip() + "\n")
-
-    commands[command](*parameters)
+    play_entries([entry], record=True)
 
     update_view(figure, axes)
