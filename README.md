@@ -27,3 +27,81 @@ Player *blessedness* is calculated as `received / "owed"`.  The **baseline** *bl
 Any seasoned Catan player knows that reading the ju-ju of the numerical landscape is a major skill of the game.  Number *blessedness* works very similarly to player *blessedness*, but the calculation per number is instead `times rolled / "owed"`.
 
 Numbers that are blessed above `1.0` are hotter than they "should" be, and numbers that are below are colder than they "should" be.
+
+## Installation
+
+### Requirements
+This program requires you to have a working Python 3 installation, and matplotlib.
+
+You can install matplotlib with `pip`:
+```
+pip install matplotlib
+```
+
+If you need help with either of those things, there is plenty of information out there.
+
+### Installation
+Nothing fancy, installation-wise; just put the script `tracker.py` somewhere you'll be able to find it.  You could clone the repository with:
+```
+git clone https://github.com/cdbfoster/catan-tracker
+```
+
+## Usage
+
+### Run the script
+To use, run the script:
+```
+python tracker.py
+```
+
+If all goes well, you should see an empty tracker window open, and your terminal should be waiting for commands:
+```
+$ python tracker.py
+Command (h for help):
+```
+
+The options should be sufficiently explained by the help text (`h` command).  In any case, here's a rundown on the usage:
+
+### Add players
+All players must be added before the first roll.  Add each player with the `p` command:
+```
+p Chris
+```
+Names are case-sensitive.
+
+### Add holdings
+You must record each holding each player has.  For instance, if a player places their first settlement on the intersection of a 5 hex, 6 hex, and 3 hex, they have 3 holdings: 5, 6, 3, and that can be recording with the following 3 `a` commands:
+```
+a Chris 5
+a Chris 6
+a Chris 3
+```
+Record the new holdings a player adds every time they build a settlement, even if you've recorded a holding for a single number hex before; two settlements on the same hex count as two holdings.  Cities also count as two holdings per hex that they border.
+
+### Record rolls
+Record rolls simply by entering the number that was rolled.  If a 6 is rolled, type
+```
+6
+```
+followed by the return key.
+
+### Moving the robber
+When the robber moves, record the holdings which the robber will prevent from receiving resources with the `r` command.  For instance, if the robber is placed on a 6 hex, on which Chris has a city and Hans has a settlement, the robber's stolen holdings can be recorded with the following commands:
+```
+r Chris 6
+r Chris 6
+r Hans 6
+```
+
+When the robber moves to a new location, use the `r` command with no arguments to clear the robber's stolen holdings before recording the new ones:
+```
+r
+```
+
+To record the effect of stealing a resource card from a player, use the `r` command, followed by the player being stolen from, followed by the player doing to the stealing.  If Hans steals from Chris, that'd be:
+```
+r Chris Hans
+```
+
+### Help
+The `h` command provides a summary of all the commands in the program, including more that weren't covered in the above explanations.
